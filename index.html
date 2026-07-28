@@ -172,6 +172,17 @@ section{padding:100px max(24px,8vw)}
 .contact-chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:10px;padding:12px 20px;color:var(--text);text-decoration:none;font-size:14px;font-weight:500;transition:all 0.2s;background:var(--surface)}
 .contact-chip:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
 
+.contact-form{margin-top:40px;text-align:left;display:flex;flex-direction:column;gap:14px}
+.contact-form input,.contact-form textarea{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border-color 0.2s}
+.contact-form input:focus,.contact-form textarea:focus{border-color:var(--accent)}
+.contact-form textarea{resize:vertical;min-height:110px}
+.contact-form button{background:var(--accent);color:var(--bg);border:none;border-radius:10px;padding:12px 20px;font-size:14px;font-weight:600;cursor:pointer;transition:opacity 0.2s}
+.contact-form button:hover{opacity:0.85}
+.contact-form button:disabled{opacity:0.5;cursor:not-allowed}
+.form-status{font-size:13px;margin-top:4px;font-family:var(--mono)}
+.form-status.success{color:#4ade80}
+.form-status.error{color:#f87171}
+
 /* FOOTER */
 footer{padding:28px max(24px,8vw);border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;background:var(--bg)}
 footer p{font-size:13px;color:var(--muted);font-family:var(--mono)}
@@ -471,8 +482,56 @@ footer span{color:var(--accent)}
       <a href="https://github.com/muzammil-12345/portfolio/raw/refs/heads/main/Muzammil_Zulfiqar_CV.pdf" target="_blank" class="contact-chip">📄 CV</a>
       <a href="https://calendly.com/muzammilzulfi01/30min" target="_blank" class="contact-chip">📅 Book a Call</a>
     </div>
+
+    <form class="contact-form" id="contactForm">
+      <input type="text" name="name" placeholder="Your name" required>
+      <input type="email" name="email" placeholder="Your email" required>
+      <textarea name="message" placeholder="Your message" required></textarea>
+      <button type="submit" id="contactSubmitBtn">Send Message</button>
+      <div class="form-status" id="contactFormStatus"></div>
+    </form>
   </div>
 </section>
+
+<script>
+(function(){
+  var form = document.getElementById('contactForm');
+  var status = document.getElementById('contactFormStatus');
+  var btn = document.getElementById('contactSubmitBtn');
+  var FORM_ENDPOINT = "https://formspree.io/f/REPLACE_WITH_YOUR_FORM_ID";
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    status.className = 'form-status';
+    status.textContent = '';
+
+    var data = new FormData(form);
+
+    fetch(FORM_ENDPOINT, {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    }).then(function(response){
+      if (response.ok) {
+        status.textContent = 'Message sent! I will get back to you soon.';
+        status.classList.add('success');
+        form.reset();
+      } else {
+        status.textContent = 'Something went wrong. Please email me directly instead.';
+        status.classList.add('error');
+      }
+    }).catch(function(){
+      status.textContent = 'Network error. Please email me directly instead.';
+      status.classList.add('error');
+    }).finally(function(){
+      btn.disabled = false;
+      btn.textContent = 'Send Message';
+    });
+  });
+})();
+</script>
 
 <!-- FOOTER -->
 <footer>
